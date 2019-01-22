@@ -18,7 +18,6 @@ class Game
         while playing == true
             status = round(status)
             playing = false if status == false
-            show_board(status)
         end
     end
 
@@ -34,13 +33,17 @@ class Game
     end
 
     def show_board(game_status)
-        puts game_status[:images][incorrect_guesses.length]
+        num_wrong = game_status[:incorrect_guesses].length
+        puts game_status[:images][num_wrong]
         puts "Incorrect guesses: "
         puts game_status[:incorrect_guesses].join(", ")
+        puts "You have #{6-num_wrong} more incorrect guesses."
+        puts
         puts "Word to guess:"
         puts game_status[:word].join(" ")
         puts "Answer:"
         puts game_status[:secret_word].join("")
+        puts
     end
 
     def start_game
@@ -51,56 +54,56 @@ class Game
             secret_word: secret_word,
             word: word,
             incorrect_guesses: [],
-            images: ["
+            images: ['
             +---+
             |   |
             |    
             |    
             |    
             |   
-          =========", "
+          ==========', '
             +---+
             |   |
             |   O 
             |    
             |    
             |   
-          =========", "
+          ==========', '
             +---+
             |   |
             |   O 
             |   | 
             |    
             |   
-          =========", "
+          ==========', '
             +---+
             |   |
             |   O 
             |  /| 
             |    
             |   
-          =========", "
-            +---+
-            |   |
+          ==========', '
+            +---+ 
+            |   | 
             |   O 
             |  /|\ 
-            |    
-            |   
-          =========", "
-            +---+
-            |   |
+            |     
+            |      
+          ==========', '
+            +---+ 
+            |   | 
             |   O 
             |  /|\ 
             |  /  
-            |   
-          =========", "
-            +---+
-            |   |
-            |   O 
+            |      
+          ==========', '
+            +---+ 
+            |   | 
+            |   O  
             |  /|\ 
-            |  / \
+            |  / \ 
             |   
-          ========= "]
+          ==========']
         }
     end
 
@@ -122,6 +125,7 @@ class Game
             else
                 game_status[:incorrect_guesses] << guess
             end
+            show_board(game_status)
         end
         game_status
     end
