@@ -10,6 +10,18 @@ class Game
     def initialize
     end
 
+    # Overall game structure
+    def play
+        status = start_game
+        show_board(status)
+        playing = true
+        while playing == true
+            status = round(status)
+            playing = false if status == false
+            show_board(status)
+        end
+    end
+
     # Select a random word of 5 to 12 letters from the dictionary file.
     def get_word(dictionary)
         word = dictionary[rand(dictionary.length)]
@@ -22,23 +34,13 @@ class Game
     end
 
     def show_board(game_status)
+        puts game_status[:images][incorrect_guesses.length]
         puts "Incorrect guesses: "
         puts game_status[:incorrect_guesses].join(", ")
         puts "Word to guess:"
         puts game_status[:word].join(" ")
         puts "Answer:"
         puts game_status[:secret_word].join("")
-    end
-
-    def play
-        status = start_game
-        show_board(status)
-        playing = true
-        while playing == true
-            status = round(status)
-            playing = false if status == false
-            show_board(status)
-        end
     end
 
     def start_game
@@ -48,7 +50,57 @@ class Game
         game_status = {
             secret_word: secret_word,
             word: word,
-            incorrect_guesses: []
+            incorrect_guesses: [],
+            images: ["
+            +---+
+            |   |
+            |    
+            |    
+            |    
+            |   
+          =========", "
+            +---+
+            |   |
+            |   O 
+            |    
+            |    
+            |   
+          =========", "
+            +---+
+            |   |
+            |   O 
+            |   | 
+            |    
+            |   
+          =========", "
+            +---+
+            |   |
+            |   O 
+            |  /| 
+            |    
+            |   
+          =========", "
+            +---+
+            |   |
+            |   O 
+            |  /|\ 
+            |    
+            |   
+          =========", "
+            +---+
+            |   |
+            |   O 
+            |  /|\ 
+            |  /  
+            |   
+          =========", "
+            +---+
+            |   |
+            |   O 
+            |  /|\ 
+            |  / \
+            |   
+          ========= "]
         }
     end
 
