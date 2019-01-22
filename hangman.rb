@@ -1,11 +1,10 @@
-class Game
-    def initialize
-    end
+require 'yaml'
 
+class Game
+    
     # Overall game structure
     def play
-        status = start_game
-        show_board(status)
+        status = load_or_new_game
         playing = true
         while playing == true
             status = round(status)
@@ -21,6 +20,26 @@ class Game
                 playing = false
             end
         end
+    end
+
+    # Start the game by loading a saved game or starting a new game.
+    def load_or_new_game
+        puts "Welcome to Hangman!"
+        if File.exist?("savefile.txt")
+            puts "Would you like to (1) load your saved game or (2) start a new game? Please enter 1 or 2."
+            answer = gets.chomp
+            if answer == "1"
+                save_state = File.read("savefile.txt")
+                status = YAML.load(save_state)
+                File.delete("savefile.txt")
+            else
+                status = start_game
+            end
+        else 
+            status = start_game
+        end
+        show_board(status)
+        return status
     end
 
     # Select a random word of 5 to 12 letters from the dictionary file.
@@ -44,8 +63,6 @@ class Game
         puts
         puts "Word to guess:"
         puts game_status[:word].join(" ")
-        puts "Answer:"
-        puts game_status[:secret_word].join("")
         puts
     end
 
@@ -113,7 +130,7 @@ class Game
 
     # Play a round of hangman.
     def round(game_status)
-        puts "Guess a new letter! Otherwise, enter 1 to solve the puzzle or 0 to quit."
+        puts "Guess a new letter! Otherwise, enter 1 to solve the puzzle, 0 to quit, or 5 to save your game."
         guess = gets.chomp.downcase
         if guess == "0"
             puts "Thanks for playing! Bye!"
@@ -128,6 +145,12 @@ class Game
                 puts "Sorry, that's not the secret word."
                 round(game_status)
             end
+        elsif guess == "5"
+            # Save the game.
+            save_state = game_status.to_yaml
+            savefile = File.open("savefile.txt", "w") { |f| f.puts save_state}
+            puts "Your current game has been saved. See you again soon!"
+            return false
         elsif guess.length > 1
             puts "Please enter only one letter at a time. Try again."
             round(game_status)
