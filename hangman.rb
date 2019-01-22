@@ -1,11 +1,3 @@
-class Player
-    attr_accessor :name
-
-    def initialize(name)
-        @name = name
-    end
-end
-
 class Game
     def initialize
     end
@@ -17,7 +9,17 @@ class Game
         playing = true
         while playing == true
             status = round(status)
-            playing = false if status == false
+            if status == false
+                playing = false
+                return
+            end
+            if status[:secret_word] == status[:word]
+                puts "Congratulations! You win!"
+                playing = false
+            elsif status[:incorrect_guesses].length >= 6
+                puts "Sorry, you lost. The secret word was '#{status[:secret_word].join("")}'."
+                playing = false
+            end
         end
     end
 
@@ -28,10 +30,11 @@ class Game
         if word.length.between?(5,12)
             return word.downcase.strip
         else
-            get_word
+            get_word(dictionary)
         end
     end
 
+    # Display the hangman board.
     def show_board(game_status)
         num_wrong = game_status[:incorrect_guesses].length
         puts game_status[:images][num_wrong]
@@ -46,6 +49,7 @@ class Game
         puts
     end
 
+    # Initialize the game status parameters.
     def start_game
         dictionary = File.readlines("dictionary.txt")
         secret_word = get_word(dictionary).split("")
@@ -107,13 +111,23 @@ class Game
         }
     end
 
+    # Play a round of hangman.
     def round(game_status)
         puts "Guess a new letter! Otherwise, enter 1 to solve the puzzle or 0 to quit."
         guess = gets.chomp.downcase
         if guess == "0"
+            puts "Thanks for playing! Bye!"
             return false
         elsif guess == "1"
             # Let the player guess the full answer.
+            word_guess = gets.chomp.downcase.strip.split("")
+            if word_guess == game_status[:secret_word]
+                puts "Congratulations! You win!"
+                return false
+            else
+                puts "Sorry, that's not the secret word."
+                round(game_status)
+            end
         elsif guess.length > 1
             puts "Please enter only one letter at a time. Try again."
             round(game_status)
